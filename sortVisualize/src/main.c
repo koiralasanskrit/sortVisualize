@@ -36,6 +36,7 @@ int window_width;
 int window_height;
 struct nk_context* main_ctx;
 struct nk_colorf bg;
+double previous_time;
 
 
 void GLAPIENTRY debugCall(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
@@ -53,8 +54,8 @@ int main(void)
         glfwSetWindowAspectRatio(main_window, 16, 9);
 
 		glfwGetWindowSize(main_window, &window_width, &window_height);
+        glfwSwapInterval(1);
         sortview_init(window_width, window_height);
-
 
         main_ctx = nk_glfw3_init(&maini_glfw, main_window, NK_GLFW3_INSTALL_CALLBACKS);
 
@@ -64,14 +65,13 @@ int main(void)
 
         bg.r = 0.10f; bg.g = 0.10f; bg.b = 0.10f; bg.a = 1.0f;
 
-
+        previous_time = glfwGetTime();
         while (!glfwWindowShouldClose(main_window))
         {
             glfwGetWindowSize(main_window, &window_width, &window_height);
             glViewport(0, 0, window_width, window_height);
 			glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
-
 
             main_draw(main_ctx);
             glfwSwapBuffers(main_window);
@@ -84,10 +84,12 @@ int main(void)
         return 0;
 }
 
-
 void main_draw()
 {
-    sortview_onUpdate(10.0f);
+    if (glfwGetTime() - previous_time > 0.5f * (1/sortview_animation_speed)) {
+        sortview_onUpdate(0.0f);
+        previous_time = glfwGetTime();
+    }
 	sortview_onRender(0.03, main_window, window_height, window_width);
 	nk_glfw3_new_frame(&maini_glfw);
 	if (nk_begin(main_ctx, "Debug", nk_rect(0.8*window_width, 0, 0.2 * window_width, window_height),

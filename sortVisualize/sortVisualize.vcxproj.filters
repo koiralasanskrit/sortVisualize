@@ -107,6 +107,9 @@
     <ClInclude Include="src\sortVis\sortview.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sortVis\soundsynth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\vertexShader.glsl" />

@@ -9,6 +9,7 @@
 #include "sortview.h"
 #include "../vendor/nuklear/nuklear.h"
 #include "../main.h"
+#include "soundsynth.h"
 
 
 /*DEBUG*/
@@ -47,11 +48,12 @@ sortview_quad swap_indices[2];
 float sortview_window_height = 0;
 float sortview_window_width = 0;
 int sortview_no_of_items = 0;
-int sortview_animation_speed = 0;
+float sortview_animation_speed = 0;
 
 void
 sortview_init(float window_width, float window_height)
 {
+	soundsynth_audio_init();
 	sortview_selection_first = (sortview_color) {.r = 0.0f, 1.0f, 1.0f };
 	sortview_selection_second = (sortview_color) {.r = 1.0f, 0.0f, 0.0f };
 	sortview_other_color = (sortview_color) {.r = 1.0f, 1.0f, 1.0f };
@@ -104,17 +106,22 @@ sortview_init(float window_width, float window_height)
 void
 sortview_onUpdate(float deltaTime)
 {
-	if ((deltaTime > 5.0f) && (current_frame < sortbase_frame_stuff.frame_index)) {
-//		base.frame.array = base.frame.arrayAnim[current_frame];
+	if ((current_frame < sortbase_frame_stuff.frame_index)) {
+		for(int i = 0; i < 1000000; i++)
+			soundsynth_pause();
 		memcpy(sortbase_frame_stuff.array,
 			sortbase_frame_stuff.array_of_arrays[current_frame],
 			sizeof(int) * sortbase_frame_stuff.array_size);
+		int played = sortbase_frame_stuff.array_of_selection[current_frame].second;
+		soundsynth_playsvar(played);
+		soundsynth_play();
 		current_frame++;
+		previous_time = glfwGetTime();
 	}
 	else {
+		soundsynth_pause();
 		current_frame = 0;
 	}
-		
 }
 
 void
@@ -169,7 +176,7 @@ sortview_onGui(struct nk_context *ctx)
 	nk_label(ctx, "No of Items:", NK_TEXT_LEFT);
 	nk_slider_int(ctx, 10, &sortbase_no_of_items, 500, 1);
 	nk_label(ctx, "Speed:", NK_TEXT_LEFT);
-	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 5, 0.1);
+	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 20, 0.1);
 	nk_label(ctx, "", NK_TEXT_LEFT);
 	if (nk_button_label(ctx, "Bubble Sort"))
 	{

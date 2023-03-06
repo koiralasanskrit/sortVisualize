@@ -39,6 +39,7 @@ extern sortview_vertex vertices[500 * 1024];
 extern sortview_quad indices[500 * 1024];
 extern sortview_vertex swap_vertices[8];
 extern sortview_quad swap_indices[2];
+extern float sortview_animation_speed;
 
 void sortview_init(float window_width, float window_height);
 
