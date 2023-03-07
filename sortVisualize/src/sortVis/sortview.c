@@ -10,8 +10,6 @@
 #include "../vendor/nuklear/nuklear.h"
 #include "../main.h"
 #include "soundsynth.h"
-
-
 /*DEBUG*/
 char sortview_debug[100][100];
 int sortview_debug_count = 0;
@@ -113,7 +111,8 @@ sortview_onUpdate(float deltaTime)
 			sortbase_frame_stuff.array_of_arrays[current_frame],
 			sizeof(int) * sortbase_frame_stuff.array_size);
 		int played = sortbase_frame_stuff.array_of_selection[current_frame].second;
-		soundsynth_playsvar(played);
+		int another_played = sortbase_frame_stuff.array[played] + sortbase_frame_stuff.array_of_selection[current_frame].first;
+		soundsynth_playsvar(another_played, another_played);
 		soundsynth_play();
 		current_frame++;
 		previous_time = glfwGetTime();
@@ -174,9 +173,9 @@ sortview_onGui(struct nk_context *ctx)
 	}
 	sortview_debug_count = 0;
 	nk_label(ctx, "No of Items:", NK_TEXT_LEFT);
-	nk_slider_int(ctx, 10, &sortbase_no_of_items, 500, 1);
+	nk_slider_int(ctx, 10, &sortbase_no_of_items, 300, 1);
 	nk_label(ctx, "Speed:", NK_TEXT_LEFT);
-	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 20, 0.1);
+	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 100, 0.1);
 	nk_label(ctx, "", NK_TEXT_LEFT);
 	nk_layout_row_dynamic(ctx, 20, 1);
 
@@ -218,8 +217,6 @@ sortview_onGui(struct nk_context *ctx)
 		nk_combo_end(ctx);
 	}
 	
-
-
 	if (nk_button_label(ctx, "Bubble Sort"))
 	{
 		sortbase_destroy();
@@ -268,13 +265,13 @@ sortview_onGui(struct nk_context *ctx)
 		current_frame = 0;
 	}
 
-	//if (ImGui::Button("Selection Sort")) {
-	//	base.reset();
-	//	base.randomize();
-	//	base.selectionSort();
-	//	clearRectBatch();
-	//	currentFrame = 0;
-	//}
+	if (nk_button_label(ctx, "Radix Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_radixsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
 }
 
 void

@@ -10,7 +10,7 @@ sortbase_frame sortbase_frame_stuff;
 void
 sortbase_randomize() 
 {
-    sortbase_no_of_frames = 10 * sortbase_no_of_items;
+    sortbase_no_of_frames = 100 * sortbase_no_of_items;
     srand(45);
     sortbase_frame_stuff.frame_index = 0;
 
@@ -42,7 +42,6 @@ sortbase_destroy()
     for (int i = 0; i < sortbase_no_of_frames; ++i)
         free(sortbase_frame_stuff.array_of_arrays[i]);
     free(sortbase_frame_stuff.array_of_arrays);
-    memset(&sortbase_frame_stuff, 0, sizeof(sortbase_frame));
 }
 
 void
@@ -180,7 +179,6 @@ sortbase_mergesort(int *_array, int l, int r, int _size)
         sortbase_mergesort(_array, l, m, _size);
         sortbase_push_to_frame(_array, _size, l, m);
         sortbase_mergesort(_array, m + 1, r, _size);
-        sortbase_push_to_frame(_array, _size, m, r);
         sortbase_merge(_array, l, m, r);
         sortbase_push_to_frame(_array, _size, m, r);
     }
@@ -262,19 +260,26 @@ sortbase_countsort(int *_array, int n, int exp)
     int* output = (int*)malloc(n * sizeof(int));
     int i, count[10] = { 0 };
  
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; i++) {
         count[(_array[i] / exp) % 10]++;
+        sortbase_push_to_frame(_array, n, i, 0);
+    }
  
-    for (i = 1; i < 10; i++)
+    for (i = 1; i < 10; i++) {
         count[i] += count[i - 1];
+        sortbase_push_to_frame(_array, n, 0, i);
+    }
  
     for (i = n - 1; i >= 0; i--) {
         output[count[(_array[i] / exp) % 10] - 1] = _array[i];
         count[(_array[i] / exp) % 10]--;
+        sortbase_push_to_frame(_array, n, i, 0);
     }
  
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; i++) {
         _array[i] = output[i];
+        sortbase_push_to_frame(_array, n, 0, i);
+    }
 
     free(output);
 }
@@ -284,6 +289,7 @@ sortbase_radixsort(int *_array, int n)
 {
     int m = sortbase_getmax(_array, n);
  
-    for (int exp = 1; m / exp > 0; exp *= 10)
+    for (int exp = 1; m / exp > 0; exp *= 10) {
         sortbase_countsort(_array, n, exp);
+    }
 }

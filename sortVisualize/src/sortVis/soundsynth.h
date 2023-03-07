@@ -20,4 +20,4 @@ void soundsynth_play();
 
 void soundsynth_pause();
 
-void soundsynth_playsvar(int input);
+void soundsynth_playsvar(int input, int input_for_volume);
