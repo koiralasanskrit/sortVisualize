@@ -54,9 +54,9 @@ void
 sortview_init(float window_width, float window_height)
 {
 	soundsynth_audio_init();
-	sortview_selection_first = (sortview_color) {.r = 0.0f, 1.0f, 1.0f };
-	sortview_selection_second = (sortview_color) {.r = 1.0f, 0.0f, 0.0f };
-	sortview_other_color = (sortview_color) {.r = 1.0f, 1.0f, 1.0f };
+	sortview_selection_first = (sortview_color) {.r = 0.0f, 1.0f, 1.0f};
+	sortview_selection_second = (sortview_color) {.r = 1.0f, 0.0f, 0.0f};
+	sortview_other_color = (sortview_color) {.r = 1.0f, 1.0f, 1.0f};
 	sortbase_randomize();
 	sortbase_bubblesort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 	glm_ortho(0.0f, window_width, 0, window_height, 1, 2, sortview_projection_matrix);
@@ -178,11 +178,93 @@ sortview_onGui(struct nk_context *ctx)
 	nk_label(ctx, "Speed:", NK_TEXT_LEFT);
 	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 20, 0.1);
 	nk_label(ctx, "", NK_TEXT_LEFT);
+	nk_layout_row_dynamic(ctx, 20, 1);
+
+	/* Colors */
+	nk_label(ctx, "Color All:", NK_TEXT_LEFT);
+	nk_layout_row_dynamic(ctx, 25, 1);
+	if (nk_combo_begin_color(ctx, nk_rgb_cf(*((struct nk_colorf*) &sortview_other_color)), nk_vec2(nk_widget_width(ctx), 400))) {
+		nk_layout_row_dynamic(ctx, 120, 1);
+		*((struct nk_colorf*) &sortview_other_color) = nk_color_picker(ctx, *((struct nk_colorf*) &sortview_other_color), NK_RGBA);
+		nk_layout_row_dynamic(ctx, 25, 1);
+		sortview_other_color.r = nk_propertyf(ctx, "#R:", 0, sortview_other_color.r, 1.0f, 0.01f, 0.005f);
+		sortview_other_color.g = nk_propertyf(ctx, "#G:", 0, sortview_other_color.g, 1.0f, 0.01f, 0.005f);
+		sortview_other_color.b = nk_propertyf(ctx, "#B:", 0, sortview_other_color.b, 1.0f, 0.01f, 0.005f);
+		nk_combo_end(ctx);
+	}
+
+	nk_label(ctx, "Color First:", NK_TEXT_LEFT);
+	nk_layout_row_dynamic(ctx, 25, 1);
+	if (nk_combo_begin_color(ctx, nk_rgb_cf(*((struct nk_colorf*) &sortview_selection_first)), nk_vec2(nk_widget_width(ctx), 400))) {
+		nk_layout_row_dynamic(ctx, 120, 1);
+		*((struct nk_colorf*) &sortview_selection_first) = nk_color_picker(ctx, *((struct nk_colorf*) &sortview_selection_first), NK_RGBA);
+		nk_layout_row_dynamic(ctx, 25, 1);
+		sortview_selection_first.r = nk_propertyf(ctx, "#R:", 0, sortview_selection_first.r, 1.0f, 0.01f, 0.005f);
+		sortview_selection_first.g = nk_propertyf(ctx, "#G:", 0, sortview_selection_first.g, 1.0f, 0.01f, 0.005f);
+		sortview_selection_first.b = nk_propertyf(ctx, "#B:", 0, sortview_selection_first.b, 1.0f, 0.01f, 0.005f);
+		nk_combo_end(ctx);
+	}
+
+
+	nk_label(ctx, "Color Second:", NK_TEXT_LEFT);
+	nk_layout_row_dynamic(ctx, 25, 1);
+	if (nk_combo_begin_color(ctx, nk_rgb_cf(*((struct nk_colorf*) &sortview_selection_second)), nk_vec2(nk_widget_width(ctx), 400))) {
+		nk_layout_row_dynamic(ctx, 120, 1);
+		*((struct nk_colorf*) &sortview_selection_second) = nk_color_picker(ctx, *((struct nk_colorf*) &sortview_selection_second), NK_RGBA);
+		nk_layout_row_dynamic(ctx, 25, 1);
+		sortview_selection_second.r = nk_propertyf(ctx, "#R:", 0, sortview_selection_second.r, 1.0f, 0.01f, 0.005f);
+		sortview_selection_second.g = nk_propertyf(ctx, "#G:", 0, sortview_selection_second.g, 1.0f, 0.01f, 0.005f);
+		sortview_selection_second.b = nk_propertyf(ctx, "#B:", 0, sortview_selection_second.b, 1.0f, 0.01f, 0.005f);
+		nk_combo_end(ctx);
+	}
+	
+
+
 	if (nk_button_label(ctx, "Bubble Sort"))
 	{
 		sortbase_destroy();
 		sortbase_randomize();
 		sortbase_bubblesort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Selection Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_selectionsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Insertion Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_insertionsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Heap Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_heapsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Merge Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_mergesort(sortbase_frame_stuff.array, 0, sortbase_frame_stuff.array_size - 1, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Quick Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_quicksort(sortbase_frame_stuff.array, 0, sortbase_frame_stuff.array_size - 1, sortbase_frame_stuff.array_size);
 		current_frame = 0;
 	}
 

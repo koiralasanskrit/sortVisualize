@@ -1,12 +1,14 @@
 #pragma once
 #include <GLFW/glfw3.h>
 /* Vertices, Quads and Color Structs */
-struct sortview_position { float x; float y; float z; };
-struct sortview_color { float r; float g; float b; };
+struct sortview_position { float x, y, z; };
+struct sortview_color { float r, g, b; };
+struct sortview_colora { float r, g, b, a; };
 struct sortview_vertex { struct sortview_position position; struct sortview_color color; };
 struct sortview_quad { unsigned int indices[6]; };
 
 typedef struct sortview_color sortview_color;
+typedef struct sortview_colora sortview_colora;
 typedef struct sortview_position sortview_position;
 typedef struct sortview_vertex sortview_vertex;
 typedef struct sortview_quad sortview_quad;

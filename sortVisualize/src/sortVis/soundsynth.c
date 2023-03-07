@@ -1,14 +1,28 @@
 #include <SDL.h>
 #include <stdio.h>
+#include <math.h>
 #include "soundsynth.h"
+#include "sortbase.h"
 
 uint64_t soundsynth_samples_played = 0;
 SDL_AudioSpec soundsynth_audio_spec_want, soundsynth_audio_spec;
 SDL_AudioDeviceID soundsynth_audio_device_id;
-float soundsynth_volume = 0.3;
+float soundsynth_volume = 0.01;
 float soundsynth_frequency = 200.0;
 
 float soundsynth_svars_frequency[7] = {256, 280, 312, 346, 384, 426, 480};
+
+/* Musical instruments */
+float
+soundsynth_audio_gen(x)
+{
+    float sum = 0;
+	for (int i = 0; i <= 100; i++)
+	{
+        sum += (1 / (2 * i + 1)) * sin((2 * i + 1) * x);
+	}
+    return sum;
+}
 
 void
 soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
@@ -20,8 +34,8 @@ soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
     {
         double time = (*samples_played + sid) / 44100.0;
         double x = 2.0 * M_PI * time * soundsynth_frequency;
-        fstream[2 * sid + 0] = soundsynth_volume * sin(x); /* L */
-        fstream[2 * sid + 1] = soundsynth_volume * sin(x); /* R */
+        fstream[2 * sid + 0] = soundsynth_volume * soundsynth_audio_gen(x); /* L */
+        fstream[2 * sid + 1] = soundsynth_volume * soundsynth_audio_gen(x); /* R */
     }
 
     *samples_played += (len / 8);
@@ -73,5 +87,8 @@ void
 soundsynth_playsvar(int input)
 {
     int index = input / 7; /* This gives the tble */
+    soundsynth_volume = (input - 0) / (sortbase_frame_stuff.array_size - 0) + 0.01;
     soundsynth_frequency = (index + 1) * soundsynth_svars_frequency[input % 7];
 }
+
+
