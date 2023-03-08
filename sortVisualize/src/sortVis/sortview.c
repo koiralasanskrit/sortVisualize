@@ -105,8 +105,7 @@ void
 sortview_onUpdate(float deltaTime)
 {
 	if ((current_frame < sortbase_frame_stuff.frame_index)) {
-		for(int i = 0; i < 1000000; i++)
-			soundsynth_pause();
+		soundsynth_pause();
 		memcpy(sortbase_frame_stuff.array,
 			sortbase_frame_stuff.array_of_arrays[current_frame],
 			sizeof(int) * sortbase_frame_stuff.array_size);
@@ -164,20 +163,28 @@ sortview_onRender(float deltaTime, GLFWwindow *main_window, float window_Height,
 void
 sortview_onGui(struct nk_context *ctx)
 {
-	sprintf(sortview_debug[sortview_debug_count++], "W:%f", sortview_window_width);
-	sprintf(sortview_debug[sortview_debug_count++], "H:%f", sortview_window_height);
 	nk_layout_row_static(ctx, 20, sortview_window_width * 0.2 * 0.9, 1);
-	for (int i = 0; i < sortview_debug_count; i++)
-	{
-		nk_label(ctx, sortview_debug[i], NK_TEXT_LEFT);
-	}
 	sortview_debug_count = 0;
 	nk_label(ctx, "No of Items:", NK_TEXT_LEFT);
 	nk_slider_int(ctx, 10, &sortbase_no_of_items, 300, 1);
+	nk_label(ctx, "Volume:", NK_TEXT_LEFT);
+	nk_slider_float(ctx, 0.1, &soundsynth_volume, 2, 0.1);
 	nk_label(ctx, "Speed:", NK_TEXT_LEFT);
 	nk_slider_float(ctx, 0.1, &sortview_animation_speed, 100, 0.1);
 	nk_label(ctx, "", NK_TEXT_LEFT);
 	nk_layout_row_dynamic(ctx, 20, 1);
+
+	nk_layout_row_dynamic(ctx, 25, 3);
+
+	if (nk_button_label(ctx, "<-") && selected > 0)
+	{
+		selected--;
+	}
+	nk_label(ctx, instrument_strings[selected], NK_TEXT_CENTERED);
+	if (nk_button_label(ctx, "->") && selected < NO_OF_INSTRUMENTS)
+	{
+		selected++;
+	}
 
 	/* Colors */
 	nk_label(ctx, "Color All:", NK_TEXT_LEFT);

@@ -9,64 +9,128 @@ SDL_AudioSpec soundsynth_audio_spec_want, soundsynth_audio_spec;
 SDL_AudioDeviceID soundsynth_audio_device_id;
 float soundsynth_volume = 0.1;
 float soundsynth_frequency = 200.0;
-
 float soundsynth_svars_frequency[7] = {256, 280, 312, 346, 384, 426, 480};
 
-struct sb_complex {
-    float real, img;
-};
 
-struct data {
-    int x, y;
-};
-typedef struct data data;
-typedef struct sb_complex sb_complex;
+/* Fourier */
+#define PI 3.1415926538979
+#define SIZE(array) sizeof(array) / sizeof(array[0])
+#define SAMPLES 8
 
-sb_complex
-soundsynth_dft_xk(int k, data* xy, int N)
+struct ssy_complex { float real, img; };
+struct ssy_mag_angle { float mag, angle; };
+typedef struct ssy_complex ssy_complex;
+typedef struct ssy_mag_angle ssy_mag_angle;
+
+
+ssy_complex
+ssy_xk(int kth_coefficient, int no_of_samples, float *samples)
 {
-    float sum_real = 0;
     float sum_img = 0;
-    for (int i = 0; i <= k; i++)
+    float sum_real = 0;
+    for (int index = 0; index < no_of_samples; index++)
     {
-		float b_o = (2 * M_PI * k * i / N);
-        sum_real += xy[i].x * cos(-b_o);
-        sum_img += xy[i].x * sin(-b_o);
+        float x_o = samples[index];
+        float b_o = 2 * PI * kth_coefficient * index / no_of_samples;
+        sum_img += x_o * sin(-b_o);
+        sum_real += x_o * cos(-b_o);
+        //        printf("x_o:%f kth:%f sin(-b_o):%f\n", x_o, kth_coefficient, sin(-b_o));
     }
-    return (sb_complex) {sum_real, sum_img};
+    return (ssy_complex){sum_real, sum_img};
 }
 
-sb_complex
-soundsynth_fourier(int k, data* xy, int N)
+ssy_complex
+inverse_fourier(int kth_coefficient, int no_of_samples, ssy_complex *samples)
 {
-    float sum_real = 0;
     float sum_img = 0;
-    sb_complex cmplx_temp = soundsynth_dft_xk(0, xy, N);
-    sum_real += 1/2 * cmplx_temp.img;
-    sum_img += 1/2 * cmplx_temp.real;
-    for (int i = 1; i <= k; i++)
+    float sum_real = 0;
+    for (int index = 0; index < no_of_samples; index++)
     {
-		sb_complex cmplx_temp = soundsynth_dft_xk(i, xy, N);
-		sum_real += cmplx_temp.img;
-		sum_img += cmplx_temp.real;
+        ssy_complex x_o = samples[index];
+        float b_o = 2 * PI * kth_coefficient * index / no_of_samples;
+        sum_img += x_o.img * sin(b_o);
+        sum_real += x_o.real * cos(b_o);
+        // printf("x_o:%f kth:%f sin(-b_o):%f\n", x_o, kth_coefficient, sin(-b_o));
     }
-    return (sb_complex) { sum_real, sum_img };
+    return (ssy_complex){sum_real * 1 / no_of_samples, sum_img * 1 / no_of_samples};
+}
+
+ssy_complex
+fourier_sum(int no_of_samples, float *samples)
+{
+    ssy_complex sum = (ssy_complex){0, 0};
+    for (int i = 0; i < no_of_samples; i++)
+    {
+        ssy_complex s = ssy_xk(i, no_of_samples, samples);
+        sum.img += s.img;
+        sum.real += s.real;
+    }
+    return sum;
 }
 
 float
-sb_complex_mag(sb_complex sb)
+ssy_mag(ssy_complex cmp)
 {
-    return sqrt((sb.real) * (sb.real) + (sb.img) * (sb.img));
+    return sqrt(cmp.real * cmp.real + cmp.img * cmp.img);
+}
+
+float
+ssy_angle(ssy_complex cmp)
+{
+    return atan2f(cmp.img, cmp.real);
+}
+
+float
+fourier_sum_magnitude_sampled(int no_of_samples, float *samples)
+{
+    float sum = 0;
+    for (int i = 0; i < no_of_samples; i++)
+    {
+        sum += ssy_mag(ssy_xk(i, SAMPLES, samples));
+    }
+    return sum / no_of_samples;
 }
 
 /* Musical instruments */
-float flute[] = { 10, 15, 16, 20.2, 18.2, 25, 20.1, 30, 13.5, 5, 0 };
 
-float
-soundsynth_audio_gen(x)
+struct ssy_instrument {
+    float samples[SAMPLES];
+    ssy_mag_angle transformed[SAMPLES/2];
+    char name[30];
+};
+typedef struct ssy_instrument ssy_instrument;
+typedef enum instrument instrument;
+
+ssy_instrument instruments[NO_OF_INSTRUMENTS];
+char instrument_strings[NO_OF_INSTRUMENTS][20] = { "Timber1", "Timber2", "Timber3"};
+float instrument_samples[NO_OF_INSTRUMENTS][SAMPLES] = { 
+    {0.5, 0.707, 1, 0.7, 0.6, -0.65, -0, -0.5}, 
+    {-1, -1, -1, 0.0, 1, 1, 1, 1},
+    {0, 0, 0, -1, 1, 1, 1 -1, 1}
+};
+instrument selected = TIMBER2;
+
+
+void
+ssy_transform_freq_domain(ssy_instrument* inst, int instr)
 {
-    return sin(x);
+    ssy_complex out_samp[SAMPLES];
+    for (int i = 0; i < 8; i++)
+    {
+        ssy_complex cmp = ssy_xk(i, SAMPLES, instrument_samples[instr]);
+        out_samp[i] = cmp;
+    }
+
+    ssy_complex freq_domain[SAMPLES];
+    for (int i = 0; i < 8 / 2; i++)
+    {
+        freq_domain[i].img = 2 * out_samp[i].img / 8;
+        freq_domain[i].real = 2 * out_samp[i].real / 8;
+        inst->transformed[i].mag = ssy_mag(freq_domain[i]);
+        inst->transformed[i].angle = ssy_angle(freq_domain[i]);
+    }
 }
+
 
 void
 soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
@@ -78,8 +142,14 @@ soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
     {
         double time = (*samples_played + sid) / 44100.0;
         double x = 2.0 * M_PI * time * soundsynth_frequency;
-        fstream[2 * sid + 0] = soundsynth_volume * (sin(x)+cos(x)); /* L */
-        fstream[2 * sid + 1] = soundsynth_volume * (sin(x)+cos(x)); /* R */
+
+		float sum = 0;
+		for (int i = 0; i < SAMPLES / 2; i++) {
+			sum += instruments[selected].transformed[i].mag * cos(x * instruments[selected].transformed[i].angle);
+		}
+
+		fstream[2 * sid + 0] = soundsynth_volume * sum;
+		fstream[2 * sid + 1] = soundsynth_volume * sum;
     }
 
     *samples_played += (len / 8);
@@ -88,6 +158,10 @@ soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
 void
 soundsynth_audio_init()
 {
+    for (int i = 0; i < NO_OF_INSTRUMENTS; i++)
+    {
+        ssy_transform_freq_domain(&instruments[i], i);
+    }
 
     if(SDL_Init(SDL_INIT_AUDIO) < 0)
     {
