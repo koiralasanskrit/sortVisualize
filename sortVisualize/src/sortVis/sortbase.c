@@ -184,35 +184,6 @@ sortbase_mergesort(int *_array, int l, int r, int _size)
     }
 }
 
-int
-sortbase_partition(int *_array, int low, int high)
-{
-    int pivot = _array[high]; // pivot
-    int i = (low - 1);
-               
-    for (int j = low; j <= high - 1; j++) {
-        if (_array[j] < pivot) {
-            i++; 
-            sortbase_swap(_array[i], _array[j]);
-        }
-    }
-    sortbase_swap(_array[i + 1], _array[high]);
-    return (i + 1);
-}
- 
-void
-sortbase_quicksort(int *_array, int low, int high, int _size)
-{
-    printf("low:%d high:%d size:%d", low, high, _size);
-    if (low < high) {
-        int pi = sortbase_partition(_array, low, high);
-        sortbase_quicksort(_array, low, pi - 1, _size);
-        sortbase_push_to_frame(_array, _size, low, pi - 1);
-        sortbase_quicksort(_array, pi + 1, high, _size);
-        sortbase_push_to_frame(_array, _size, pi + 1, high);
-    }
-}
-
 void
 sortbase_heapify(int *_array, int N, int i, int _size)
 {
@@ -293,3 +264,54 @@ sortbase_radixsort(int *_array, int n)
         sortbase_countsort(_array, n, exp);
     }
 }
+
+
+
+int sortbase_partition(int array[], int low, int high, int size) {
+  
+  // select the rightmost element as pivot
+  int pivot = array[high];
+  
+  // pointer for greater element
+  int i = (low - 1);
+
+  // traverse each element of the array
+  // compare them with the pivot
+  for (int j = low; j < high; j++) {
+    if (array[j] <= pivot) {
+        
+      // if element smaller than pivot is found
+      // swap it with the greater element pointed by i
+      i++;
+      
+      // swap element at i with element at j
+      sortbase_swap(&array[i], &array[j]);
+		sortbase_push_to_frame(sortbase_frame_stuff.array, size, i, high);
+    }
+  }
+
+  // swap the pivot element with the greater element at i
+  sortbase_swap(&array[i + 1], &array[high]);
+  sortbase_push_to_frame(sortbase_frame_stuff.array, size, i + 1, high);
+  
+  // return the partition point
+  return (i + 1);
+}
+
+void sortbase_quicksort(int array[], int low, int high, int size) 
+{
+  if (low < high) {
+    
+    // find the pivot element such that
+    // elements smaller than pivot are on left of pivot
+    // elements greater than pivot are on right of pivot
+    int pi = sortbase_partition(array, low, high, size);
+    // recursive call on the left of pivot
+    sortbase_quicksort(array, low, pi - 1, size);
+    
+    // recursive call on the right of pivot
+    sortbase_quicksort(array, pi + 1, high, size);
+    sortbase_push_to_frame(sortbase_frame_stuff.array, size, low, high);
+  }
+}
+

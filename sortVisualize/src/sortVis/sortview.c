@@ -389,3 +389,4 @@ sortview_clearRectBatch()
 	memset(vertices, 0, 1024 * sizeof(sortview_vertex));
 	memset(indices, 0, 1024 * sizeof(sortview_quad));
 }
+

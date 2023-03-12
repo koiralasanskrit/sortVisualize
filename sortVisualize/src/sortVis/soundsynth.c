@@ -102,11 +102,13 @@ typedef struct ssy_instrument ssy_instrument;
 typedef enum instrument instrument;
 
 ssy_instrument instruments[NO_OF_INSTRUMENTS];
-char instrument_strings[NO_OF_INSTRUMENTS][20] = { "Timber1", "Timber2", "Timber3"};
+char instrument_strings[NO_OF_INSTRUMENTS][20] = { "Timber1", "Timber2", "Timber3", "Timber4", "Timber5"};
 float instrument_samples[NO_OF_INSTRUMENTS][SAMPLES] = { 
     {0.5, 0.707, 1, 0.7, 0.6, -0.65, -0, -0.5}, 
-    {-1, -1, -1, 0.0, 1, 1, 1, 1},
-    {0, 0, 0, -1, 1, 1, 1 -1, 1}
+    {-1, -0.5, -0.9, -3, 1, 0.805, 0.253, 0.234},
+    {0, 0, 0, -1, 1, 0, 1 -1, 1},
+    {0.5, -0.707, 1, 0.7, -0.6, -0.65, -0, -0.5}, 
+    {-1, 1, 1, 0.5, 0.3, 0, -0.25, -1}, 
 };
 instrument selected = TIMBER2;
 
@@ -130,7 +132,6 @@ ssy_transform_freq_domain(ssy_instrument* inst, int instr)
         inst->transformed[i].angle = ssy_angle(freq_domain[i]);
     }
 }
-
 
 void
 soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)

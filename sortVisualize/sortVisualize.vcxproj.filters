@@ -36,13 +36,7 @@
     <ClCompile Include="src\main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\maintest.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ksacgl\ksaD\ksaLinkedList.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\drawG\draw.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ksacgl\ksaFrameBuffer.c">
@@ -84,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\drawG\draw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ksacgl\ksaFrameBuffer.h">

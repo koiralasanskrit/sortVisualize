@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\drawG\draw.c" />
     <ClCompile Include="src\ksacgl\debug\debug.c" />
     <ClCompile Include="src\ksacgl\ksaD\ksaLinkedList.c" />
     <ClCompile Include="src\ksacgl\ksaD\ksaStack.c" />
@@ -150,13 +149,11 @@
     <ClCompile Include="src\ksacgl\ksaVertexArray.c" />
     <ClCompile Include="src\ksacgl\ksaVertexBuffer.c" />
     <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\maintest.c" />
     <ClCompile Include="src\sortVis\sortbase.c" />
     <ClCompile Include="src\sortVis\sortview.c" />
     <ClCompile Include="src\sortVis\soundsynth.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\drawG\draw.h" />
     <ClInclude Include="src\ksacgl\debug\debug.h" />
     <ClInclude Include="src\ksacgl\ksaD\ksaStack.h" />
     <ClInclude Include="src\ksacgl\ksaFrameBuffer.h" />
