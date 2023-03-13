@@ -315,3 +315,68 @@ void sortbase_quicksort(int array[], int low, int high, int size)
   }
 }
 
+void
+sortbase_oddeven(int * arr, int size)
+{
+	int sorted = 0;
+	while(!sorted){
+		sorted = 1;
+
+		//Looping two times, once for 0-1, 2-3, ... pairs
+		//Next for 1-2, 3-4, ... pairs
+		for(int k = 0; k <= 1; ++k){
+			for(int i = k; i < (size-1); ++i){
+				if(arr[i] > arr[i+1]){
+					sortbase_swap(arr+i, arr+i+1);
+					sortbase_push_to_frame(sortbase_frame_stuff.array, size, i, i+1);
+					sorted = 0;
+				}
+			}
+		}
+	}
+}
+
+void 
+sortbase_shellsort(int * arr, int size)
+{
+	float f = 1.3;
+	int gap = size;
+
+	int last = 0;
+
+	for(;;){
+
+
+//Decrease gap each time by a factor
+	gap = gap/ f;
+
+	//If gap is now between 0 and 1, so floor is 1
+	if(!gap)
+
+	//Run this for one last time using last variable
+		if(last)
+			break;
+		else{
+			last = 1;
+			gap = 1;
+		}
+
+	for(int i = 0; i < gap; ++i){
+
+		//This is basically insertion/bubble sort, 
+		//Where instead of increasing or decreasing by 1 , we do that by gap
+		for(int j = i; j < size; j+= gap){
+			for(int k = j- gap; k >=0; k-=gap){
+				if(arr[k] > arr[k +gap]){
+					sortbase_swap(arr +k, arr + k +gap);
+					sortbase_push_to_frame(sortbase_frame_stuff.array, size, j, k);
+				}
+				else
+					break;
+			}
+		}
+	}
+	}
+
+}
+

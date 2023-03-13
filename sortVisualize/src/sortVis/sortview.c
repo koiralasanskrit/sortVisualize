@@ -279,6 +279,22 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_radixsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
 	}
+
+	if (nk_button_label(ctx, "Odd even Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_oddeven(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
+
+	if (nk_button_label(ctx, "Shell Sort"))
+	{
+		sortbase_destroy();
+		sortbase_randomize();
+		sortbase_shellsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
+		current_frame = 0;
+	}
 }
 
 void
