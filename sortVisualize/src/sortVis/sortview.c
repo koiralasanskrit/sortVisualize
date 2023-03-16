@@ -152,10 +152,11 @@ sortview_onRender(float deltaTime, GLFWwindow *main_window, float window_Height,
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 
 		2 * sizeof(sortview_quad),
 		&swap_indices);
+	ksaVArrayBind(&sortview_swapvarray);
 	ksaShaderUse(&sortview_swapshader);
 	glUniformMatrix4fv(glGetUniformLocation(sortview_swapshader.programId, "u_MVP"), 1, GL_FALSE, sortview_projection_matrix[0]);
-	glUniform1f(glGetUniformLocation(sortview_swapshader.programId, "u_Time"), 1, sin(deltaTime * 16 * glfwGetTime()));
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+	glUniform1f(glGetUniformLocation(sortview_swapshader.programId, "u_Time"), sin(glfwGetTime() * sortview_animation_speed * 3) );
+	glDrawElements(GL_TRIANGLES, 6 * 2, GL_UNSIGNED_INT, NULL);
 	/* THING TO BE LOOKED */
 	sortview_clearRectBatch();
 }
@@ -230,6 +231,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_bubblesort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Bubble Sort");
 	}
 
 	if (nk_button_label(ctx, "Selection Sort"))
@@ -238,6 +240,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_selectionsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Selection Sort");
 	}
 
 	if (nk_button_label(ctx, "Insertion Sort"))
@@ -246,6 +249,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_insertionsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Insertion Sort");
 	}
 
 	if (nk_button_label(ctx, "Heap Sort"))
@@ -254,6 +258,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_heapsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Heap Sort");
 	}
 
 	if (nk_button_label(ctx, "Merge Sort"))
@@ -261,7 +266,9 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_destroy();
 		sortbase_randomize();
 		sortbase_mergesort(sortbase_frame_stuff.array, 0, sortbase_frame_stuff.array_size - 1, sortbase_frame_stuff.array_size);
+		sortbase_anim(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Merge Sort");
 	}
 
 	if (nk_button_label(ctx, "Quick Sort"))
@@ -269,7 +276,9 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_destroy();
 		sortbase_randomize();
 		sortbase_quicksort(sortbase_frame_stuff.array, 0, sortbase_frame_stuff.array_size - 1, sortbase_frame_stuff.array_size);
+		sortbase_anim(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Quick Sort");
 	}
 
 	if (nk_button_label(ctx, "Radix Sort"))
@@ -278,6 +287,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_radixsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Radix Sort");
 	}
 
 	if (nk_button_label(ctx, "Odd even Sort"))
@@ -286,6 +296,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_oddeven(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Odd Even Sort");
 	}
 
 	if (nk_button_label(ctx, "Shell Sort"))
@@ -294,6 +305,7 @@ sortview_onGui(struct nk_context *ctx)
 		sortbase_randomize();
 		sortbase_shellsort(sortbase_frame_stuff.array, sortbase_frame_stuff.array_size);
 		current_frame = 0;
+		sprintf(name_of_sort, "%s", "Shell Sort");
 	}
 }
 

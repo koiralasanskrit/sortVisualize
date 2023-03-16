@@ -15,6 +15,7 @@ extern SDL_AudioDeviceID soundsynth_audio_device_id;
 extern float soundsynth_volume;
 extern float soundsynth_frequency;
 extern instrument selected;
+extern float soundsynth_fourier_output;
 
 char instrument_strings[NO_OF_INSTRUMENTS][20];
 

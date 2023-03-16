@@ -10,7 +10,7 @@ sortbase_frame sortbase_frame_stuff;
 void
 sortbase_randomize() 
 {
-    sortbase_no_of_frames = 100 * sortbase_no_of_items;
+    sortbase_no_of_frames = 300 * sortbase_no_of_items;
     srand(45);
     sortbase_frame_stuff.frame_index = 0;
 
@@ -73,6 +73,14 @@ sortbase_push_to_frame(int* _array, int _size, int i, int j)
 	sortbase_frame_stuff.array_of_selection[sortbase_frame_stuff.frame_index] = (sortbase_pair){ .first = i, .second = j };
 }
 
+void sortbase_anim(int* _array, int _size)
+{
+    for (size_t i = 0; i < _size; i++)
+    {
+        sortbase_push_to_frame(_array, _size, i, _size - i);
+    }
+}
+
 void
 sortbase_bubblesort(int*_array, int _size) 
 {
@@ -84,6 +92,8 @@ sortbase_bubblesort(int*_array, int _size)
             }
         }
     }
+    sortbase_anim(_array, _size);
+
 }
 
 void
@@ -106,6 +116,7 @@ sortbase_selectionsort(int *_array, int _size)
             sortbase_push_to_frame(_array, _size, i, j);
         }
     }
+    sortbase_anim(_array, _size);
 } 
 
 void
@@ -123,6 +134,7 @@ sortbase_insertionsort(int *_array, int _size)
         }
         _array[j + 1] = key;
     }
+    sortbase_anim(_array, _size);
 }
 
 void
@@ -213,6 +225,7 @@ sortbase_heapsort(int *_array, int _size)
         sortbase_heapify(_array, i, 0, _size);
         sortbase_push_to_frame(_array, _size, i, 0);
     }
+    sortbase_anim(_array, _size);
 }
   
 int
@@ -263,6 +276,7 @@ sortbase_radixsort(int *_array, int n)
     for (int exp = 1; m / exp > 0; exp *= 10) {
         sortbase_countsort(_array, n, exp);
     }
+    sortbase_anim(_array, n);
 }
 
 
@@ -334,6 +348,7 @@ sortbase_oddeven(int * arr, int size)
 			}
 		}
 	}
+    sortbase_anim(arr, size);
 }
 
 void 
@@ -377,6 +392,7 @@ sortbase_shellsort(int * arr, int size)
 		}
 	}
 	}
+    sortbase_anim(arr, size);
 
 }
 

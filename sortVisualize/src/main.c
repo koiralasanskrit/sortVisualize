@@ -37,7 +37,9 @@ int window_height;
 struct nk_context* main_ctx;
 struct nk_colorf bg;
 double previous_time;
-
+struct nk_font *big_font;
+struct nk_font *droid;
+char name_of_sort[50];
 
 void GLAPIENTRY debugCall(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
@@ -61,8 +63,11 @@ int main(void)
 
         struct nk_font_atlas* atlas;
         nk_glfw3_font_stash_begin(&maini_glfw, &atlas);
+	    droid = nk_font_atlas_add_from_file(atlas, "res/fonts/sans.ttf", 20, 0);
+		big_font = nk_font_atlas_add_from_file(atlas, "res/fonts/sans.ttf", 50, 0);
         nk_glfw3_font_stash_end(&maini_glfw);
 
+        nk_style_set_font(main_ctx, &droid->handle);
         bg.r = 0.10f; bg.g = 0.10f; bg.b = 0.10f; bg.a = 1.0f;
 
         previous_time = glfwGetTime();
@@ -95,7 +100,13 @@ void main_draw()
 	if (nk_begin(main_ctx, "Debug", nk_rect(0.8*window_width, 0, 0.2 * window_width, window_height),
 		NK_WINDOW_BORDER | NK_WINDOW_TITLE))
 	{
+        nk_style_set_font(main_ctx, &droid->handle);
         sortview_onGui(main_ctx);
+        nk_style_set_font(main_ctx, &big_font->handle);
+        nk_label(main_ctx, " ", NK_TEXT_CENTERED);
+        nk_label(main_ctx, " ", NK_TEXT_CENTERED);
+        nk_label(main_ctx, name_of_sort, NK_TEXT_CENTERED);
+        nk_style_set_font(main_ctx, &droid->handle);
 	}
 	nk_end(main_ctx);
 
@@ -112,7 +123,7 @@ void main_init()
     /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 4);
-    main_window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+    main_window = glfwCreateWindow(960, 540, "Sort Visualization", NULL, NULL);
     if (!main_window)
     {
         glfwTerminate();

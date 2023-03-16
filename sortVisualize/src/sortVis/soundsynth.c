@@ -10,7 +10,7 @@ SDL_AudioDeviceID soundsynth_audio_device_id;
 float soundsynth_volume = 0.1;
 float soundsynth_frequency = 200.0;
 float soundsynth_svars_frequency[7] = {256, 280, 312, 346, 384, 426, 480};
-
+float soundsynth_fourier_output = 0.0f;
 
 /* Fourier */
 #define PI 3.1415926538979
@@ -148,7 +148,7 @@ soundsynth_audio_callback(void* userdata, uint8_t* stream, int len)
 		for (int i = 0; i < SAMPLES / 2; i++) {
 			sum += instruments[selected].transformed[i].mag * cos(x * instruments[selected].transformed[i].angle);
 		}
-
+        soundsynth_fourier_output = soundsynth_volume * sum;
 		fstream[2 * sid + 0] = soundsynth_volume * sum;
 		fstream[2 * sid + 1] = soundsynth_volume * sum;
     }
